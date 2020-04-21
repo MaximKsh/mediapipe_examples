@@ -1,0 +1,42 @@
+input_stream: "in"
+output_stream: "out"
+
+node: {
+  calculator: "ImageTransformationCalculator"
+  input_stream: "IMAGE:in"
+  output_stream: "IMAGE:transformed_input"
+  node_options: {
+    [type.googleapis.com/mediapipe.ImageTransformationCalculatorOptions] {
+      output_width: 224
+      output_height: 224
+    }
+  }
+}
+
+node {
+  calculator: "TfLiteConverterCalculator"
+  input_stream: "IMAGE:transformed_input"
+  output_stream: "TENSORS:image_tensor"
+  node_options: {
+      [type.googleapis.com/mediapipe.TfLiteConverterCalculatorOptions] {
+        zero_center: false
+      }
+  }
+}
+
+node {
+  calculator: "TfLiteInferenceCalculator"
+  input_stream: "TENSORS:image_tensor"
+  output_stream: "TENSORS:prediction_tensor"
+  node_options: {
+    [type.googleapis.com/mediapipe.TfLiteInferenceCalculatorOptions] {
+      model_path: "inference/mobilenetv2_imagenet.tflite"
+    }
+  }
+}
+
+node {
+  calculator: "TfLiteTensorsToFloatsCalculator"
+  input_stream: "TENSORS:prediction_tensor"
+  output_stream: "FLOATS:out"
+}

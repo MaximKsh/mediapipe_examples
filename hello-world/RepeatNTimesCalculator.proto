@@ -1,0 +1,9 @@
+syntax = "proto2";
+package mediapipe_demonstration;
+import "mediapipe/framework/calculator_options.proto";
+message RepeatNTimesCalculatoOptions {
+  extend mediapipe.CalculatorOptions {
+    optional RepeatNTimesCalculatoOptions ext = 350607623;
+  }
+  required int32 n = 2;
+}

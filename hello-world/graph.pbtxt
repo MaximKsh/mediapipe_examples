@@ -1,0 +1,13 @@
+input_stream: "in"
+output_stream: "out"
+
+node {
+    calculator: "RepeatNTimesCalculator"
+    input_stream: "in"
+    output_stream: "OUTPUT_TAG:out"
+    node_options: {
+        [type.googleapis.com/mediapipe_demonstration.RepeatNTimesCalculatoOptions] {
+            n: 3
+        }
+    }
+}

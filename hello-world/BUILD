@@ -1,5 +1,5 @@
 load("@mediapipe_repository//mediapipe/framework/port:build_config.bzl", "mediapipe_cc_proto_library")
-
+# Правило сборки для настроек калькулятора
 proto_library(
     name = "repeat_n_times_calculator_proto",
     srcs = ["RepeatNTimesCalculator.proto"],
@@ -8,7 +8,7 @@ proto_library(
         "@mediapipe_repository//mediapipe/framework:calculator_proto",
     ],
 )
-
+# Правило сборки для кода калькулятора
 mediapipe_cc_proto_library(
     name = "repeat_n_times_calculator_cc_proto",
     srcs = ["RepeatNTimesCalculator.proto"],
@@ -18,7 +18,6 @@ mediapipe_cc_proto_library(
     visibility = ["//visibility:public"],
     deps = [":repeat_n_times_calculator_proto"],
 )
-
 # Правило сборки калькулятора. Указано название, список исходников и зависимости
 cc_library(
     name = "repeat_n_times_calculator",
@@ -33,7 +32,6 @@ cc_library(
     ],
     alwayslink = 1,
 )
-
 # Правило сборки исполняемого файла, который будет запускать граф.
 cc_binary(
     name = "HelloMediapipe",

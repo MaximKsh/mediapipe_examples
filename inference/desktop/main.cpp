@@ -20,14 +20,6 @@ mediapipe::Status RunGraph() {
         mediapipe::ParseTextProtoOrDie<mediapipe::CalculatorGraphConfig>(graph_file_content);
 
     
-    auto img_mat = cv::imread("./inference/img.jpg");
-
-    // Wrap Mat into an ImageFrame.
-    auto input_frame = std::make_unique<mediapipe::ImageFrame>(
-        mediapipe::ImageFormat::SRGB, img_mat.cols, img_mat.rows,
-        mediapipe::ImageFrame::kDefaultAlignmentBoundary);
-    cv::Mat input_frame_mat = mediapipe::formats::MatView(input_frame.get());
-    img_mat.copyTo(input_frame_mat);
 
     mediapipe::CalculatorGraph graph;
     MP_RETURN_IF_ERROR(graph.Initialize(config));
@@ -35,17 +27,24 @@ mediapipe::Status RunGraph() {
 
     MP_RETURN_IF_ERROR(graph.StartRun({}));
 
+    // Загрузка изображения
+    auto img_mat = cv::imread("./inference/img.jpg");
+    // Преобразование изображения в пакет
+    auto input_frame = std::make_unique<mediapipe::ImageFrame>(
+        mediapipe::ImageFormat::SRGB, img_mat.cols, img_mat.rows,
+        mediapipe::ImageFrame::kDefaultAlignmentBoundary);
+    cv::Mat input_frame_mat = mediapipe::formats::MatView(input_frame.get());
+    img_mat.copyTo(input_frame_mat);
     auto frame = mediapipe::Adopt(input_frame.release()).At(mediapipe::Timestamp(0));
+    // Отправка пакета в граф
     MP_RETURN_IF_ERROR(graph.AddPacketToInputStream("in", frame));
-
     MP_RETURN_IF_ERROR(graph.CloseInputStream("in"));
-
+    // Получение результата их графа с выводом предсказания
     mediapipe::Packet packet;
     while (poller.Next(&packet)) {
         auto predictions = packet.Get<std::vector<float>>();
         int idx = std::max_element(predictions.begin(), predictions.end()) - predictions.begin();
         std::cout << idx << std::endl;
-        
     }
     return graph.WaitUntilDone();
 
